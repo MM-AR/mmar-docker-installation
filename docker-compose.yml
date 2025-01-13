@@ -1,0 +1,18 @@
+services:
+  app:
+    build: .
+    container_name: "MMAR-Platform"
+    ports:
+      - "5432:5432" # PostgreSQL
+      - "8000:8000" # Express API
+      - "8080:8080" # Modeling Tool
+      - "8070:8070" # Metamodeling Tool
+      - "8010:8010" # Code Server
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-api} # Database User
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root} # Database Password               
+      POSTGRES_DB: ${POSTGRES_DB:-api} # Database Name
+      GIT_BRANCH: ${GIT_BRANCH:-main} # Branch 
+      PRODUCTION: ${PRODUCTION:-true} # Production Mode             
+    volumes:
+      - ./data:/var/lib/postgresql/data # Datenbank-Daten persistieren
