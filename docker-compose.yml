@@ -16,3 +16,4 @@ services:
       PRODUCTION: ${PRODUCTION:-true} # Production Mode             
     volumes:
       - ./data:/var/lib/postgresql/data # Datenbank-Daten persistieren
+    mem_limit: 6g
