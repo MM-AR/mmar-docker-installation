@@ -56,8 +56,14 @@ else
     echo "on http://localhost:8000, http://localhost:8080, and http://localhost:8070"
     echo "!!!!!! if you change the ports in the conf/.env files, you have to change the ports in the docker-compose.yml file as well !!!!!"
     echo "........................................................................................................................................."
-    echo "If you want to add example metamodels, you can do this by running the script add_example_metamodels.sh in the container on path /usr/src/app/add_example_metamodels.sh"
+    echo "As soon as you open the mmar project folder in vscode, the server will be started and the example metamodels will be added."
     echo "........................................................................................................................................."
+
+    # add example metamodels via start_node_servers.sh
+    echo "----------------------------------------------"
+    echo "Adding example metamodels..."
+    echo "----------------------------------------------"
+    bash /usr/src/app/add_example_metamodels.sh &
 fi
 
 # Start supervisord
