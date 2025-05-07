@@ -20,9 +20,16 @@ echo "PRODUCTION = $PRODUCTION"
     echo "----------------------------------------------"
     echo "Starting npm run start in mmar/mmar-server..."
     cd /usr/src/app/shared/mmar/mmar-server
+
+    if [ "$PRODUCTION" = true ]; then
     npm run start &
     SERVER_PID=$!
-    echo "Server started with PID $SERVER_PID"
+    echo "Server started in production with PID $SERVER_PID"
+    else
+    npm run start &
+    SERVER_PID=$!
+    echo "Server started in develop with PID $SERVER_PID"
+    fi
 
     # Uncomment if you want to add example metamodels
     echo "----------------------------------------------"

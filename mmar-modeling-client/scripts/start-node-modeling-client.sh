@@ -20,9 +20,16 @@ echo "PRODUCTION = $PRODUCTION"
     echo "----------------------------------------------"
     echo "Starting npm run start in mmar/mmar-modeling-client..."
     cd /usr/src/app/shared/mmar/mmar-modeling-client
+    
+    if [ "$PRODUCTION" = true ]; then
+    npm run start:prod &
+    SERVER_PID=$!
+    echo "Server started in production with PID $SERVER_PID"
+    else
     npm run start &
     SERVER_PID=$!
-    echo "Modeling Client started with PID $SERVER_PID"
+    echo "Server started in develop with PID $SERVER_PID"
+    fi
 
 
 # Keep the container running
