@@ -1,0 +1,32 @@
+# Use Node base image
+FROM node:20 AS server 
+
+# echo "Building the Docker image..."
+RUN echo "Building the Docker image..."
+
+    # Copy the start-server.sh script into the container
+COPY scripts/start-server.sh /usr/src/app/start-server.sh
+# Set permissions for the script
+RUN chmod +x /usr/src/app/start-server.sh
+
+# Copy the npm-installation-server.sh script into the container
+COPY scripts/npm-installation-server.sh /usr/src/app/npm-installation-server.sh
+# Set permissions for the script
+RUN chmod +x /usr/src/app/npm-installation-server.sh
+
+# Copy start-node-server.sh script into the container
+COPY scripts/start-node-server.sh /usr/src/app/start-node-server.sh
+# Set permissions for the script
+RUN chmod +x /usr/src/app/start-node-server.sh
+
+# Copy add_example_metamodels.sh to usr/src/app/add_example_metamodels.sh
+COPY scripts/add_example_metamodels.sh /usr/src/app/add_example_metamodels.sh
+# Set permissions for the script
+RUN chmod +x /usr/src/app/add_example_metamodels.sh
+
+#COPY all the files from conf to /usr/src/app/mmar-config-files -> environment files for node projects
+COPY conf /usr/src/app/mmar-config-files
+
+RUN echo "Running the start-server.sh script for mmar-server..."
+# Run the start-server.sh script
+CMD [ "/usr/src/app/start-server.sh"]

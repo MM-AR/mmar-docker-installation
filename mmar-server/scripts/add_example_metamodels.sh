@@ -1,14 +1,8 @@
 #!/bin/bash
 
-# output the content of /usr/src/app/mmar-config-files/.env-mmar-api as echo
-echo "----------------------------------------"
-echo "Content of .env-mmar-api:"
-cat /usr/src/app/mmar-config-files/.env-mmar-api
-# line break
-echo "----------------------------------------"
 
-# take port from .env-mmar-api
-port=$(grep -oP 'HTTPPORT\s*=\s*\K[0-9]+' /usr/src/app/mmar-config-files/.env-mmar-api)
+# take port from .env file
+port=${API_SERVER_PORT}
 echo "PORT for api to add example metamodels = $port"
 echo "----------------------------------------"
 
@@ -61,7 +55,7 @@ while true; do
         echo "Sign-in successful."
         echo "----------------------------------------"
         # add example metamodels
-        for file in /usr/src/app/mmar/mmar-database/example_metamodels/up_to_date/*.json; do
+        for file in /usr/src/app/shared/mmar/mmar-database/example_metamodels/up_to_date/*.json; do
             postMetamodel $file
         done
 
@@ -72,3 +66,10 @@ while true; do
         sleep 15
     fi
 done
+
+# remove /usr/src/app/shared/mmar/mmar-database
+echo "----------------------------------------"
+echo "Removing /usr/src/app/shared/mmar/mmar-database..."
+rm -rf /usr/src/app/shared/mmar/mmar-database
+echo "----------------------------------------"
+

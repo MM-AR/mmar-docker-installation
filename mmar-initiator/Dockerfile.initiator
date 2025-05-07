@@ -1,0 +1,39 @@
+# Use Node base image
+FROM node:20 AS initiator 
+
+# echo "Building the Docker image..."
+RUN echo "Building the Docker image..."
+
+# Create necessary directories with proper permissions
+RUN mkdir -p /usr/src/app/shared/mmar/mmar-database 
+RUN mkdir -p /usr/src/app/shared/mmar/mmar-server
+RUN mkdir -p /usr/src/app/shared/mmar/mmar-modeling-client
+RUN mkdir -p /usr/src/app/shared/mmar/mmar-metamodeling-client
+
+# Update apt and install dependencies
+RUN apt-get update && \
+    apt-get install -y git postgresql-client
+
+# Copy the start-initiator.sh script into the container
+COPY scripts/start-initiator.sh /usr/src/app/start-initiator.sh
+# Set permissions for the script
+RUN chmod +x /usr/src/app/start-initiator.sh
+
+# Copy the clone-repos-initiator.sh script into the container
+COPY scripts/clone-repos-initiator.sh /usr/src/app/clone-repos-initiator.sh
+# Set permissions for the script
+RUN chmod +x /usr/src/app/clone-repos-initiator.sh
+
+# Copy the init-db-initiator.sh script into the container
+COPY scripts/init-db-initiator.sh /usr/src/app/init-db-initiator.sh
+# Set permissions for the script
+RUN chmod +x /usr/src/app/init-db-initiator.sh
+
+# Copy the npm-installation-initiator.sh script into the container
+COPY scripts/npm-installation-initiator.sh /usr/src/app/npm-installation-initiator.sh
+# Set permissions for the script
+RUN chmod +x /usr/src/app/npm-installation-initiator.sh
+
+
+RUN echo "Running initiator script..."
+CMD [ "/usr/src/app/start-initiator.sh"]
