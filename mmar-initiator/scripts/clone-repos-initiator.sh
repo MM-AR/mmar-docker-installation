@@ -68,27 +68,20 @@ set_up_repo() {
         
         popd  # Return to the original directory
         
-        # If REMOVE_NODE_MODULES is set to true, remove node_modules and reinstall
-        if [ "$REMOVE_NODE_MODULES" = true ]; then
+        # If DELETE_NODE_MODULES is set to true, remove node_modules and reinstall
+        if [ "$DELETE_NODE_MODULES" = true ]; then
             echo "----------------------------------------"
             echo "Removing and reinstalling node_modules for branch $GIT_BRANCH..."
             rm -rf "$dest_dir/node_modules" && cd $dest_dir && npm install
         fi
     fi
 }
+set_up_repo "https://github.com/MM-AR/mmar-database.git" "/usr/src/app/shared/mmar/mmar-database"
 
-# Cloning repositories using environment variable for GitHub token
-set_up_repo "https://github.com/MM-AR/mmar-database.git" "/usr/src/app/mmar/mmar-database"
+set_up_repo "https://github.com/MM-AR/mmar-global-data-structure.git" "/usr/src/app/shared/mmar/mmar-global-data-structure"
 
-set_up_repo "https://github.com/MM-AR/mmar-global-data-structure.git" "/usr/src/app/mmar/mmar-global-data-structure"
+set_up_repo "https://github.com/MM-AR/mmar-server.git" "/usr/src/app/shared/mmar/mmar-server"
 
-set_up_repo "https://github.com/MM-AR/mmar-server.git" "/usr/src/app/mmar/mmar-server"
+set_up_repo "https://github.com/MM-AR/mmar-modeling-client.git" "/usr/src/app/shared/mmar/mmar-modeling-client"
 
-set_up_repo "https://github.com/MM-AR/mmar-modeling-client.git" "/usr/src/app/mmar/mmar-modeling-client"
-
-set_up_repo "https://github.com/MM-AR/mmar-metamodeling-client.git" "/usr/src/app/mmar/mmar-metamodeling-client"
-
-# Initialize database
-echo "--------------------------------------------------------"
-echo "Set-Up database..."
-bash /usr/src/app/initDb.sh
+set_up_repo "https://github.com/MM-AR/mmar-metamodeling-client.git" "/usr/src/app/shared/mmar/mmar-metamodeling-client"
