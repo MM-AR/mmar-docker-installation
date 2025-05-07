@@ -1,19 +1,105 @@
 services:
-  app:
-    build: .
-    container_name: "MMAR-Platform"
-    ports:
-      - "5432:5432" # PostgreSQL
-      - "8000:8000" # Express API
-      - "8080:8080" # Modeling Tool
-      - "8070:8070" # Metamodeling Tool
-      - "8010:8010" # Code Server
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-api} # Database User
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root} # Database Password               
-      POSTGRES_DB: ${POSTGRES_DB:-api} # Database Name
-      GIT_BRANCH: ${GIT_BRANCH:-main} # Branch 
-      PRODUCTION: ${PRODUCTION:-true} # Production Mode             
+  initiator:
+    build:
+      context: ./mmar-initiator
+      dockerfile: Dockerfile.initiator
+    container_name: mmar_initiator
     volumes:
-      - ./data:/var/lib/postgresql/data # Datenbank-Daten persistieren
-    mem_limit: 6g
+      - mmar-initiator:/usr/src/data
+      - mmar-shared-data:/usr/src/app/shared
+    working_dir: /usr/src/data
+    environment:
+      GIT_BRANCH: ${GIT_BRANCH}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+
+  database:
+    image: postgres:16
+    container_name: mmar_database
+    restart: always
+    volumes:
+      - mmar-shared-data:/usr/src/app/shared
+    working_dir: /usr/src/app/shared
+    environment:
+      GIT_BRANCH: ${GIT_BRANCH}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+    ports:
+      - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          memory: ${DB_SERVER_MEMORY_LIMIT}
+          cpus: "${DB_SERVER_CPU_LIMIT}"
+
+  mmar-server:
+    build:
+      context: ./mmar-server
+      dockerfile: Dockerfile.server
+    container_name: mmar_server
+    restart: always
+    volumes:
+      - mmar-server-data:/usr/src/data
+      - mmar-shared-data:/usr/src/app/shared
+    working_dir: /usr/src/data
+    environment:
+      API_SERVER_PORT: ${API_SERVER_PORT}
+      GIT_BRANCH: ${GIT_BRANCH}
+    ports:
+      - "${API_SERVER_PORT}:${API_SERVER_PORT}"
+    deploy:
+      resources:
+        limits:
+          memory: ${API_SERVER_MEMORY_LIMIT}
+          cpus: "${API_SERVER_CPU_LIMIT}"
+
+  mmar-modeling-client:
+    build:
+      context: ./mmar-modeling-client
+      dockerfile: Dockerfile.modeling
+    container_name: mmar_modeling_client
+    restart: always
+    volumes:
+      - mmar-modeling-data:/usr/src/data
+      - mmar-shared-data:/usr/src/app/shared
+    working_dir: /usr/src/data
+    environment:
+      GIT_BRANCH: ${GIT_BRANCH}
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: ${MODELING_CLIENT_MEMORY_LIMIT}
+          cpus: "${MODELING_CLIENT_CPU_LIMIT}"
+
+  mmar-metamodeling-client:
+    build:
+      context: ./mmar-metamodeling-client
+      dockerfile: Dockerfile.metamodeling
+    container_name: mmar_metamodeling_client
+    restart: always
+    volumes:
+      - mmar-metamodeling-data:/usr/src/data
+      - mmar-shared-data:/usr/src/app/shared
+    working_dir: /usr/src/data
+    environment:
+      GIT_BRANCH: ${GIT_BRANCH}
+    ports:
+      - "8070:8070"
+    deploy:
+      resources:
+        limits:
+          memory: ${METAMODELING_CLIENT_MEMORY_LIMIT}
+          cpus: "${METAMODELING_CLIENT_CPU_LIMIT}"
+
+volumes:
+  mmar-initiator:
+  mmar-server-data:
+  mmar-modeling-data:
+  mmar-metamodeling-data:
+  mmar-shared-data:
