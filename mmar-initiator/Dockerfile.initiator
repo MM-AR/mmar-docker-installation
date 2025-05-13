@@ -9,6 +9,7 @@ RUN mkdir -p /usr/src/app/shared/mmar/mmar-database
 RUN mkdir -p /usr/src/app/shared/mmar/mmar-server
 RUN mkdir -p /usr/src/app/shared/mmar/mmar-modeling-client
 RUN mkdir -p /usr/src/app/shared/mmar/mmar-metamodeling-client
+RUN mkdir -p /usr/src/app/shared/mmar/mmar-vizrep-client
 
 # Update apt and install dependencies
 RUN apt-get update && \
