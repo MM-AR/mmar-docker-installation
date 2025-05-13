@@ -101,9 +101,32 @@ services:
           memory: ${METAMODELING_CLIENT_MEMORY_LIMIT:-2G}
           cpus: "${METAMODELING_CLIENT_CPU_LIMIT:-2}"
 
+  mmar-vizrep-client:
+    build:
+      context: ./mmar-vizrep-client
+      dockerfile: Dockerfile.vizrep
+    container_name: mmar_vizrep_client
+    restart: always
+    volumes:
+      - mmar-vizrep-data:/usr/src/data
+      - mmar-shared-data:/usr/src/app/shared
+    working_dir: /usr/src/data
+    environment:
+      GIT_BRANCH: ${GIT_BRANCH}
+      PRODUCTION: ${PRODUCTION}
+    ports:
+      - "8090:8090"
+    deploy:
+      resources:
+        limits:
+          memory: ${VIZREP_CLIENT_MEMORY_LIMIT:-2G}
+          cpus: "${VIZREP_CLIENT_CPU_LIMIT:-2}"
+
+
 volumes:
   mmar-initiator:
   mmar-server-data:
   mmar-modeling-data:
   mmar-metamodeling-data:
   mmar-shared-data:
+  mmar-vizrep-data:
