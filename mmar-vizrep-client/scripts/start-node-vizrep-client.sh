@@ -18,8 +18,8 @@ echo "PRODUCTION = $PRODUCTION"
     done &
 
     echo "----------------------------------------------"
-    echo "Starting npm run start in mmar/mmar-metamodeling-client..."
-    cd /usr/src/app/shared/mmar/mmar-metamodeling-client
+    echo "Starting npm run start in mmar/mmar-vizrep-client..."
+    cd /usr/src/app/shared/mmar/mmar-vizrep-client
     
     if [ "$PRODUCTION" = true ]; then
     npm run start:prod &

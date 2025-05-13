@@ -85,3 +85,5 @@ set_up_repo "https://github.com/MM-AR/mmar-server.git" "/usr/src/app/shared/mmar
 set_up_repo "https://github.com/MM-AR/mmar-modeling-client.git" "/usr/src/app/shared/mmar/mmar-modeling-client"
 
 set_up_repo "https://github.com/MM-AR/mmar-metamodeling-client.git" "/usr/src/app/shared/mmar/mmar-metamodeling-client"
+
+set_up_repo "https://github.com/MM-AR/mmar-vizrep-client.git" "/usr/src/app/shared/mmar/mmar-vizrep-client"
