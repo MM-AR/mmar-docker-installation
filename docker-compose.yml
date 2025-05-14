@@ -119,7 +119,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: ${VIZREP_CLIENT_MEMORY_LIMIT:-2G}
+          memory: ${VIZREP_CLIENT_MEMORY_LIMIT:-4G}
           cpus: "${VIZREP_CLIENT_CPU_LIMIT:-2}"
 
 
