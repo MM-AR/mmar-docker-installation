@@ -31,11 +31,8 @@ services:
       POSTGRES_HOST: ${POSTGRES_HOST}
     ports:
       - "5432:5432"
-    deploy:
-      resources:
-        limits:
-          memory: ${DB_SERVER_MEMORY_LIMIT:-2G}
-          cpus: "${DB_SERVER_CPU_LIMIT:-2}"
+    mem_limit: ${DB_SERVER_MEMORY_LIMIT:-2G}
+    cpus: ${DB_SERVER_CPU_LIMIT:-2}
 
   mmar-server:
     build:
@@ -53,11 +50,8 @@ services:
       PRODUCTION: ${PRODUCTION}
     ports:
       - "${API_SERVER_PORT}:${API_SERVER_PORT}"
-    deploy:
-      resources:
-        limits:
-          memory: ${API_SERVER_MEMORY_LIMIT:-2G}
-          cpus: "${API_SERVER_CPU_LIMIT:-2}"
+    mem_limit: ${API_SERVER_MEMORY_LIMIT:-2G}
+    cpus: ${API_SERVER_CPU_LIMIT:-2}
 
   mmar-modeling-client:
     build:
@@ -74,11 +68,8 @@ services:
       PRODUCTION: ${PRODUCTION}
     ports:
       - "8080:8080"
-    deploy:
-      resources:
-        limits:
-          memory: ${MODELING_CLIENT_MEMORY_LIMIT:-2G}
-          cpus: "${MODELING_CLIENT_CPU_LIMIT:-2}"
+    mem_limit: ${MODELING_CLIENT_MEMORY_LIMIT:-2G}
+    cpus: ${MODELING_CLIENT_CPU_LIMIT:-2}
 
   mmar-metamodeling-client:
     build:
@@ -95,11 +86,8 @@ services:
       PRODUCTION: ${PRODUCTION}
     ports:
       - "8070:8070"
-    deploy:
-      resources:
-        limits:
-          memory: ${METAMODELING_CLIENT_MEMORY_LIMIT:-2G}
-          cpus: "${METAMODELING_CLIENT_CPU_LIMIT:-2}"
+    mem_limit: ${METAMODELING_CLIENT_MEMORY_LIMIT:-2G}
+    cpus: ${METAMODELING_CLIENT_CPU_LIMIT:-2}
 
   mmar-vizrep-client:
     build:
@@ -116,12 +104,8 @@ services:
       PRODUCTION: ${PRODUCTION}
     ports:
       - "8090:8090"
-    deploy:
-      resources:
-        limits:
-          memory: ${VIZREP_CLIENT_MEMORY_LIMIT:-4G}
-          cpus: "${VIZREP_CLIENT_CPU_LIMIT:-2}"
-
+    mem_limit: ${VIZREP_CLIENT_MEMORY_LIMIT:-6G}
+    cpus: ${VIZREP_CLIENT_CPU_LIMIT:-2}
 
 volumes:
   mmar-initiator:
