@@ -101,7 +101,9 @@ Be aware that most users are not allowed to push directly to the main and develo
 
 ## Configuration
 
-The MMAR platform can be configured using environment variables. These variables are defined in the `.env` files located in the `root` directory. You can modify these files to suit your needs. `.env-dev` and `.env` are for the configuration of the Docker variables. All the `.env-mmar...` files, located in the `conf` forlder of each container folder, are passed on to the different project folders. Only change something if you know what you are doing. By default, you can just let the files as they are. 
+The MMAR platform can be configured using environment variables. These variables are defined in the `.env` files located in the `root` directory. You can modify these files to suit your needs. `.env-dev` and `.env` are for the configuration of the Docker variables. All the `.env-mmar...` files, located in the `conf` forlder of each container folder, are passed on to the different project folders. Only change something if you know what you are doing. By default, you can just let the files as they are. (see section `Environment Variables` for more details).
+
+> **<span style="color:gold">Hint:</span> If your machine has ample resources (i.e. >= 16GB), you can remove all memory and CPU limits in the `docker-compose.yml` file to speed up the build process for all containers.**
 
 ## Environment Variables
 
@@ -127,7 +129,7 @@ The MMAR platform is configured using environment variables defined in the `.env
 - `JWT_SECRET`: Secret key for JWT authentication (used in `.env-mmar-api`)
 - `TOKEN_EXPIRE_TIME`: Expiration time for JWT tokens in ms (used in `.env-mmar-api`, default: `86400000`)
 
-### Client Configuration (Modeling and Metamodeling Client)
+### Client Configuration (Vizrep, Modeling and Metamodeling Client)
 
 - `API_URL`: URL of the API endpoint (e.g., `http://localhost:8000` for local, or your domain for production)
 - `HTTPS`: Set to `true` to enable HTTPS, `false` otherwise
@@ -142,7 +144,7 @@ The MMAR platform is configured using environment variables defined in the `.env
 
 ### Performance and Resource Limits
 
-Set these in your `.env` or `.env-dev` to control Docker resource allocation:
+Set these in your `.env` or `.env-dev` to control Docker resource allocation for each container. These variables are referenced in docker-compose.yml and determine the memory and CPU limits for each service.
 
 - `DB_SERVER_MEMORY_LIMIT`: Memory limit for the database container (e.g., `2G`)
 - `DB_SERVER_CPU_LIMIT`: CPU limit for the database container (e.g., `2`)
@@ -151,7 +153,17 @@ Set these in your `.env` or `.env-dev` to control Docker resource allocation:
 - `MODELING_CLIENT_MEMORY_LIMIT`: Memory limit for the modeling client container (e.g., `2G`)
 - `MODELING_CLIENT_CPU_LIMIT`: CPU limit for the modeling client container (e.g., `2`)
 - `METAMODELING_CLIENT_MEMORY_LIMIT`: Memory limit for the metamodeling client container (e.g., `2G`)
-- `METAMODELING_CLIENT_CPU_LIMIT`: CPU limit for the metamodeling client container (e.g., `2`)
+- `METAMODELING_CLIENT_CPU_LIMIT`: CPU limit for the metamodeling client container (e.g., `2`)`
+- `VIZREP_CLIENT_MEMORY_LIMIT`: Memory limit for the Vizrep container (e.g., `4G`)
+- `VIZREP_CLIENT_CPU_LIMIT`: CPU limit for the Vizrep container (e.g., `2`)
+
+How it works:
+
+These variables are used in the mem_limit and cpus fields of each service in `docker-compose.yml`.
+If a variable is not set, a default value is used (e.g., 2G for memory, 2 for CPU).
+You can adjust these values in .env (for production) or .env-dev (for development) to fit your system’s resources. 
+
+> **<span style="color:gold">Attention:</span> The Monaco editor in the Vizrep client needs a lot of resources during the build process. If your machine has ample resources, you can remove all memory and CPU limits in the `docker-compose.yml` file to speed up the build process for all containers.**
 
 ### Notes
 
