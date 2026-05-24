@@ -1,0 +1,30 @@
+# Use Node base image
+FROM node:20 AS llm-vizrep-service
+
+# echo "Building the Docker image..."
+RUN echo "Building the Docker image..."
+
+# Create necessary directories with proper permissions
+RUN mkdir -p /usr/src/app/shared/mmar/mmar-llm-vizrep-service
+
+# Copy the start-llm-vizrep-service.sh script into the container
+COPY scripts/start-llm-vizrep-service.sh /usr/src/app/start-llm-vizrep-service.sh
+# Set permissions for the script
+RUN chmod +x /usr/src/app/start-llm-vizrep-service.sh
+
+# Copy the npm-installation-llm-vizrep-service.sh script into the container
+COPY scripts/npm-installation-llm-vizrep-service.sh /usr/src/app/npm-installation-llm-vizrep-service.sh
+# Set permissions for the script
+RUN chmod +x /usr/src/app/npm-installation-llm-vizrep-service.sh
+
+# Copy start-node-llm-vizrep-service.sh script into the container
+COPY scripts/start-node-llm-vizrep-service.sh /usr/src/app/start-node-llm-vizrep-service.sh
+# Set permissions for the script
+RUN chmod +x /usr/src/app/start-node-llm-vizrep-service.sh
+
+# COPY all the files from conf to /usr/src/app/mmar-config-files -> environment files for node projects
+COPY conf /usr/src/app/mmar-config-files
+
+RUN echo "Running the start-llm-vizrep-service.sh script for mmar-llm-vizrep-service..."
+# Run the start-llm-vizrep-service.sh script
+CMD [ "/usr/src/app/start-llm-vizrep-service.sh" ]
