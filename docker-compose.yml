@@ -107,6 +107,30 @@ services:
     mem_limit: ${VIZREP_CLIENT_MEMORY_LIMIT:-6G}
     cpus: ${VIZREP_CLIENT_CPU_LIMIT:-2}
 
+  mmar-llm-vizrep-service:
+    build:
+      context: ./mmar-llm-vizrep-service
+      dockerfile: Dockerfile.llm-vizrep-service
+    container_name: mmar_llm_vizrep_service
+    restart: always
+    volumes:
+      - mmar-llm-vizrep-service-data:/usr/src/data
+      - mmar-shared-data:/usr/src/app/shared
+    working_dir: /usr/src/data
+    environment:
+      GIT_BRANCH: ${GIT_BRANCH}
+      PRODUCTION: ${PRODUCTION}
+      LLM_SERVICE_PORT: ${LLM_SERVICE_PORT:-3000}
+      GITHUB_MODELS_API_URL: ${GITHUB_MODELS_API_URL:-https://models.github.ai/inference}
+      GITHUB_MODELS_TOKEN: ${GITHUB_MODELS_TOKEN}
+      GITHUB_MODELS_MODEL: ${GITHUB_MODELS_MODEL:-openai/gpt-4.1}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8090}
+    ports:
+      - "${LLM_SERVICE_PORT:-3000}:${LLM_SERVICE_PORT:-3000}"
+    mem_limit: ${LLM_SERVICE_MEMORY_LIMIT:-2G}
+    cpus: ${LLM_SERVICE_CPU_LIMIT:-2}
+
 volumes:
   mmar-initiator:
   mmar-server-data:
@@ -114,3 +138,4 @@ volumes:
   mmar-metamodeling-data:
   mmar-shared-data:
   mmar-vizrep-data:
+  mmar-llm-vizrep-service-data:
