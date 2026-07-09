@@ -1,0 +1,18 @@
+FROM python:3.11-slim AS pmservice
+
+RUN apt-get update && apt-get install -y \
+    git \
+    graphviz \
+    libgraphviz-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN echo "Building the PM Service Docker image..."
+
+COPY scripts/start-pm-service.sh /usr/src/app/start-pm-service.sh
+RUN chmod +x /usr/src/app/start-pm-service.sh
+
+COPY conf /usr/src/app/mmar-config-files
+
+RUN echo "Running the start-pm-service.sh script for mmar-pm-service..."
+CMD ["/usr/src/app/start-pm-service.sh"]
