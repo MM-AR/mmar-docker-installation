@@ -107,6 +107,26 @@ services:
     mem_limit: ${VIZREP_CLIENT_MEMORY_LIMIT:-6G}
     cpus: ${VIZREP_CLIENT_CPU_LIMIT:-2}
 
+  mmar-pm-service:
+    build:
+      context: ./mmar-pm-service
+      dockerfile: Dockerfile.pmservice
+    container_name: mmar_pm_service
+    restart: always
+    volumes:
+      - mmar-pm-service-data:/usr/src/data
+      - mmar-shared-data:/usr/src/app/shared
+    working_dir: /usr/src/data
+    environment:
+      GIT_BRANCH: ${GIT_BRANCH}
+      MMAR_SERVER_URL: http://mmar-server:${API_SERVER_PORT}
+      MMAR_USERNAME: ${MMAR_USERNAME:-admin}
+      MMAR_PASSWORD: ${MMAR_PASSWORD:-admin}
+    ports:
+      - "8001:8001"
+    mem_limit: ${PM_SERVICE_MEMORY_LIMIT:-2G}
+    cpus: ${PM_SERVICE_CPU_LIMIT:-2}
+
 volumes:
   mmar-initiator:
   mmar-server-data:
@@ -114,3 +134,4 @@ volumes:
   mmar-metamodeling-data:
   mmar-shared-data:
   mmar-vizrep-data:
+  mmar-pm-service-data:

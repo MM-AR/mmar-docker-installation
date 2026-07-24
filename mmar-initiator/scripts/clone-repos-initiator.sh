@@ -82,8 +82,10 @@ set_up_repo "https://github.com/MM-AR/mmar-global-data-structure.git" "/usr/src/
 
 set_up_repo "https://github.com/MM-AR/mmar-server.git" "/usr/src/app/shared/mmar/mmar-server"
 
-set_up_repo "https://github.com/MM-AR/mmar-modeling-client.git" "/usr/src/app/shared/mmar/mmar-modeling-client"
+set_up_repo "https://github.com/shuerzeler/mmar-modeling-client" "/usr/src/app/shared/mmar/mmar-modeling-client"
 
 set_up_repo "https://github.com/MM-AR/mmar-metamodeling-client.git" "/usr/src/app/shared/mmar/mmar-metamodeling-client"
 
 set_up_repo "https://github.com/MM-AR/mmar-vizrep-client.git" "/usr/src/app/shared/mmar/mmar-vizrep-client"
+
+set_up_repo "https://github.com/shuerzeler/mmar-pm-service.git" "/usr/src/app/shared/mmar/mmar-pm-service"
