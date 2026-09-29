@@ -30,9 +30,14 @@ You can install and start the MMAR environment using a single command depending 
 ### Quick Start Production Mode
 
 Before starting the production mode, make sure that you adapt the `.env` file to your needs. You can find the file in the `root` directory.
-If you want to run the production mode on a local machine and expose it to localhost, check the environment variables `API_URL` and `ALLOWED_HOSTS` to `localhost` (in the files `.env-mmar-metamodeling-client-prod` and `.env-mmar-modeling-client-prod`). The `API_URL` should be set to `http` and not `https`. (By default no changes needed).
+If you want to run the production mode on a local machine and expose it to localhost, check that `VITE_API_URL` is `http://localhost:8000` (in `.env-mmar-metamodeling-client-prod` and `.env-mmar-modeling-client-prod`) and `VITE_SYNC_URL` is `ws://localhost:8060` (in `.env-mmar-modeling-client-prod`). Use `http` and `ws`, not `https` and `wss` (by default no changes needed).
 
-If you want to run the production mode on a production server, set the environment variable `API_URL` and `ALLOWED_HOSTS` to the domain name of your server and use `https` for the `API_URL`. 
+If you want to run the production mode on a production server:
+- set `VITE_API_URL` to the public `https://` URL of the API server and `VITE_SYNC_URL` to the public `wss://` URL of the sync server in the `-prod` files of both clients,
+- set `CORS_ORIGINS` in `mmar-server/conf/.env-mmar-api-prod` to the public `https://` origins of the two clients,
+- replace the `JWT_SECRET` in **both** `mmar-server/conf/.env-mmar-api-prod` and `mmar-sync-server/conf/.env-mmar-sync-server-prod` with the same newly generated value (`openssl rand -base64 48`).
+
+The `VITE_*` variables are embedded into the clients when they are built, which happens every time the container starts.
 
 To start the production mode, run:
 
@@ -59,7 +64,7 @@ If you want to develop something for the MMAR platform, you can use the developm
 
 The development mode uses the `.env-dev` file for configuration. You can find the file in the `root` directory. You can change the environment variables in this file to suit your needs.
 
-If you want to run the development mode on a local machine and expose it to localhost (default scenario), set the environment variables `API_URL` and `ALLOWED_HOSTS` to `localhost` (in the files `.env-mmar-metamodeling-client-development` and `.env-mmar-modeling-client-development`). The `API_URL` should be set to `http` and not `https` (by default no changes needed).
+If you want to run the development mode on a local machine and expose it to localhost (default scenario), check that `VITE_API_URL` is `http://localhost:8000` (in `.env-mmar-metamodeling-client-development` and `.env-mmar-modeling-client-development`) and `VITE_SYNC_URL` is `ws://localhost:8060` (in `.env-mmar-modeling-client-development`). Use `http` and `ws`, not `https` and `wss` (by default no changes needed).
 
 To start the development mode, run:
 ```bash
@@ -68,11 +73,11 @@ docker compose --env-file .env-dev up
 
 This will set up and start the necessary containers for MMAR. The first time you run this command, it may take a while to download the required images and set up the containers. Subsequent runs will be faster as Docker caches the images. 
 
-Check the console output for any errors. If everything is set up correctly, you can access the API Server at [http://localhost:8000/login](http://localhost:8000/login), the Metamodeling Client at [http://localhost:8075](http://localhost:8075), and the Modeling Client at [http://localhost:8085](http://localhost:8085). 
+Check the console output for any errors. If everything is set up correctly, you can access the API Server at [http://localhost:8000/login](http://localhost:8000/login), the Sync Server health check at [http://localhost:8060/healthz](http://localhost:8060/healthz), the Metamodeling Client at [http://localhost:8075](http://localhost:8075), and the Modeling Client at [http://localhost:8085](http://localhost:8085). 
 
 By using the VS Code Remote Development extension (See section `Attach Container to VSCode`), you can access the code base in an IDE to make changes. 
 
-Note that the development server does start the node projects of the API server, the modeling client, and the metamodeling client by default at start up. Check the console outputs of the containers to see if everything is running correctly. You can also check the output during development.
+Note that the development server does start the node projects of the API server, the sync server, the modeling client, and the metamodeling client by default at start up. The API server and the sync server run with nodemon and restart on every change; the clients run the Vite development server with hot reload. Check the console outputs of the containers to see if everything is running correctly. You can also check the output during development.
 
 To stop the development mode, run:
 
@@ -159,16 +164,13 @@ copies `.env-mmar-sync-server-prod` when `PRODUCTION=true` and
 
 ### Client Configuration (Modeling and Metamodeling Client)
 
-- `API_URL`: URL of the API endpoint (e.g., `http://localhost:8000` for local, or your domain for production)
-- `HTTPS`: Set to `true` to enable HTTPS, `false` otherwise
-- `ANALYZE`: Set to `true` to enable bundle analysis, `false` otherwise
-- `PORT`: The port on which the client will run (e.g., `8085` for modeling, `8075` for metamodeling)
-- `COMPRESS`: Set to `true` to enable compression, `false` otherwise
-- `ALLOWED_HOSTS`: Comma-separated list of allowed hosts (e.g., `localhost` or your domain)
-- `ERRORS`, `WARNINGS`, `RUNTIME_ERRORS`: Set to `true` to enable overlays for errors, warnings, and runtime errors respectively
-- `HOT`, `LIVE_RELOAD`: Set to `true` to enable hot reload and live reload respectively
-- `USERNAME`, `PASSWORD`: Default user credentials for the client (default: `admin`/`admin`)
-- `CI`: Set to `true` to open the Bero user interface after the server starts
+Both clients are React applications built with Vite. `npm-installation-*-client.sh` copies `.env-mmar-*-client-prod` to the client's `.env` and `.env-mmar-*-client-development` to its `.env.development`, both from the client's `conf` folder. With `PRODUCTION=true` the client is built and served with `vite preview` (reads `.env`); otherwise the Vite development server runs (reads `.env.development` on top of `.env`).
+
+- `VITE_API_URL`: URL of the API server **as seen from the browser**. Keep `http://localhost:8000` for a local setup: the compose service name `mmar-server` does not resolve in the browser, and the port is published to the host. Use the public `https://` URL when you deploy behind a domain (default: `http://localhost:8000`)
+- `VITE_SYNC_URL` (Modeling Client only): WebSocket URL of the sync server as seen from the browser. Use the public `wss://` URL when you deploy behind a domain (default: `ws://localhost:8060`)
+- `PORT`: The port on which the client runs. Must match the port published in `docker-compose.yml` (`8075` for metamodeling, `8085` for modeling)
+
+The `VITE_*` values are embedded into the client at build time, so restart the container after changing them. The default credentials for signing in are `admin`/`admin`.
 
 ### Performance and Resource Limits
 
@@ -196,8 +198,8 @@ You can adjust these values in .env (for production) or .env-dev (for developmen
 
 - The `.env` file is used for production, `.env-dev` for development.
 - Each client and server service has its own `.env-mmar-*` files in its `conf` folder for additional configuration, one `-development` and one `-prod` per service. Which of the two is used follows the `PRODUCTION` variable of the root env file, so you never have to switch them by hand.
-- For local development, set `API_URL` and `ALLOWED_HOSTS` to `localhost` in the relevant `.env-mmar-*` files.
-- For production, set `API_URL` and `ALLOWED_HOSTS` to your domain and use `https` for `API_URL`.
+- For local development, keep `VITE_API_URL` and `VITE_SYNC_URL` pointing at `localhost` in the client `.env-mmar-*` files.
+- For production behind a domain, set `VITE_API_URL` to your `https://` API URL and `VITE_SYNC_URL` to your `wss://` sync server URL, and add the `https://` client origins to `CORS_ORIGINS` in `.env-mmar-api-prod`.
 - The `JWT_SECRET` shipped in the `-prod` files of `mmar-server` and `mmar-sync-server` is committed to this public repository and has to be considered known to everyone. Replace it in **both** files with your own `openssl rand -base64 48` before exposing a deployment to anyone else.
 - The `initiator` container clones every repository and installs `mmar-global-data-structure` (gds), which the server, the sync server and both clients build against. When it is done it creates the marker file `/usr/src/app/shared/mmar/.gds-install-complete` in the shared volume; the other containers wait for that marker before they install and build. Because of this, the `initiator` has to run: starting a single service (e.g. `docker compose up mmar-server`) will wait forever unless `initiator` is started as well.
 
