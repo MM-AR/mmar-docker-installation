@@ -1,39 +1,39 @@
-# Function to clone a repository and run npm install if package.json exists
+#!/bin/bash
+
 npm_installation() {
     local target_dir=$1
-
     if [ -f "$target_dir/package.json" ]; then
-        # if $DELETE_NODE_MODULES is true, remove node_modules directory
         if [ "$DELETE_NODE_MODULES" = true ]; then
-            echo "--------------------------------------------------------"
-            echo "Removing node_modules directory in $target_dir..."
+            echo "Removing node_modules in $target_dir..."
             rm -rf $target_dir/node_modules
-        fi        
-
-
-        echo "----------------------------------------"
+        fi
         echo "Running npm install in $target_dir..."
-        echo "------------be patient ...--------------"
         cd $target_dir
-        # rm -rf node_modules
         npm install
     else
-        echo "No package.json found in $target_dir. Skipping npm install."
+        echo "No package.json found in $target_dir. Skipping."
     fi
 }
 
-# wait for package.json to be created in the mmar-metamodeling-client directory
+# mmar-global-data-structure (gds) is consumed from source through the @gds
+# alias, so gds must have its own node_modules on disk before Vite starts.
+# The initiator installs gds and only then creates this marker. Without the
+# wait, Vite can fail to resolve the imports gds makes (class-transformer, ...).
+GDS_READY_MARKER="/usr/src/app/shared/mmar/.gds-install-complete"
+while [ ! -f "$GDS_READY_MARKER" ]; do
+    echo "Waiting for mmar-global-data-structure to be installed by the initiator..."
+    sleep 5
+done
+
 while [ ! -f /usr/src/app/shared/mmar/mmar-metamodeling-client/package.json ]; do
-    echo "Waiting for package.json to be created in /usr/src/app/shared/mmar/mmar-metamodeling-client..."
+    echo "Waiting for package.json in mmar-metamodeling-client..."
     sleep 5
 done
 
 npm_installation "/usr/src/app/shared/mmar/mmar-metamodeling-client"
 
-
-#copy the env files for the node servers
-echo "----------------------------------------"
-echo "Copying .env files for the node servers..."
-echo "----------------------------------------"
-cp /usr/src/app/mmar-config-files/.env-mmar-metamodeling-client-development /usr/src/app/shared/mmar/mmar-metamodeling-client/.env.development
-cp /usr/src/app/mmar-config-files/.env-mmar-metamodeling-client-prod /usr/src/app/shared/mmar/mmar-metamodeling-client/.env
+echo "Copying .env files..."
+cp /usr/src/app/mmar-config-files/.env-mmar-metamodeling-client-development \
+   /usr/src/app/shared/mmar/mmar-metamodeling-client/.env.development
+cp /usr/src/app/mmar-config-files/.env-mmar-metamodeling-client-prod \
+   /usr/src/app/shared/mmar/mmar-metamodeling-client/.env

@@ -10,7 +10,7 @@ echo "PRODUCTION = $PRODUCTION"
         echo "........................................................................................................................................."
         echo "Starting $PRODUCTION server. This may take some time..."
         echo "The branch checked out is $GIT_BRANCH."
-        echo "Applications will be exposed on http://localhost:8000, http://localhost:8070, http://localhost:8080, and http://localhost:8090"        
+        echo "Applications will be exposed on http://localhost:8000, http://localhost:8075, and http://localhost:8085"        
         echo "!!!!!! If you change the ports in the conf/.env files, you have to change the ports in the docker-compose.yml file as well !!!!!"
         echo "........................................................................................................................................."
 
@@ -37,7 +37,18 @@ echo "PRODUCTION = $PRODUCTION"
     bash /usr/src/app/add_example_metamodels.sh &
 
 
-# Keep the container running
+# Stay alive as long as the node server lives. Do NOT "tail -f /dev/null" here:
+# that made a server that had died during start-up (e.g. a failing "npm run
+# tjs") look like a healthy container that simply never answered on port 8000.
+# Exiting with the server's status lets the "restart: always" policy in
+# docker-compose.yml bring it back up.
 echo "----------------------------------------------"
 echo "Container is running. Press Ctrl+C to stop."
-tail -f /dev/null
+wait $SERVER_PID
+SERVER_EXIT_CODE=$?
+
+echo "----------------------------------------------"
+echo "!!!!!! The mmar-server process exited with code $SERVER_EXIT_CODE !!!!!!"
+echo "Check the log above for the actual error. The container will be restarted."
+echo "----------------------------------------------"
+exit $SERVER_EXIT_CODE

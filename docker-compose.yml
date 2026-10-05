@@ -17,7 +17,7 @@ services:
       PRODUCTION: ${PRODUCTION}
 
   database:
-    image: postgres:16
+    image: postgres:18.6
     container_name: mmar_database
     restart: always
     volumes:
@@ -53,28 +53,28 @@ services:
     mem_limit: ${API_SERVER_MEMORY_LIMIT:-2G}
     cpus: ${API_SERVER_CPU_LIMIT:-2}
 
-  mmar-modeling-client:
+  mmar-sync-server:
     build:
-      context: ./mmar-modeling-client
-      dockerfile: Dockerfile.modeling
-    container_name: mmar_modeling_client
+      context: ./mmar-sync-server
+      dockerfile: Dockerfile.sync-server
+    container_name: mmar_sync_server
     restart: always
     volumes:
-      - mmar-modeling-data:/usr/src/data
+      - mmar-sync-server-data:/usr/src/data
       - mmar-shared-data:/usr/src/app/shared
     working_dir: /usr/src/data
     environment:
       GIT_BRANCH: ${GIT_BRANCH}
       PRODUCTION: ${PRODUCTION}
     ports:
-      - "8080:8080"
-    mem_limit: ${MODELING_CLIENT_MEMORY_LIMIT:-2G}
-    cpus: ${MODELING_CLIENT_CPU_LIMIT:-2}
+      - "8060:8060"
+    mem_limit: ${SYNC_SERVER_MEMORY_LIMIT:-1G}
+    cpus: ${SYNC_SERVER_CPU_LIMIT:-1}
 
   mmar-metamodeling-client:
     build:
       context: ./mmar-metamodeling-client
-      dockerfile: Dockerfile.metamodeling
+      dockerfile: Dockerfile.metamodeling-client
     container_name: mmar_metamodeling_client
     restart: always
     volumes:
@@ -84,33 +84,35 @@ services:
     environment:
       GIT_BRANCH: ${GIT_BRANCH}
       PRODUCTION: ${PRODUCTION}
+      DELETE_NODE_MODULES: ${DELETE_NODE_MODULES}
     ports:
-      - "8070:8070"
+      - "8075:8075"
     mem_limit: ${METAMODELING_CLIENT_MEMORY_LIMIT:-2G}
     cpus: ${METAMODELING_CLIENT_CPU_LIMIT:-2}
 
-  mmar-vizrep-client:
+  mmar-modeling-client:
     build:
-      context: ./mmar-vizrep-client
-      dockerfile: Dockerfile.vizrep
-    container_name: mmar_vizrep_client
+      context: ./mmar-modeling-client
+      dockerfile: Dockerfile.modeling-client
+    container_name: mmar_modeling_client
     restart: always
     volumes:
-      - mmar-vizrep-data:/usr/src/data
+      - mmar-modeling-data:/usr/src/data
       - mmar-shared-data:/usr/src/app/shared
     working_dir: /usr/src/data
     environment:
       GIT_BRANCH: ${GIT_BRANCH}
       PRODUCTION: ${PRODUCTION}
+      DELETE_NODE_MODULES: ${DELETE_NODE_MODULES}
     ports:
-      - "8090:8090"
-    mem_limit: ${VIZREP_CLIENT_MEMORY_LIMIT:-6G}
-    cpus: ${VIZREP_CLIENT_CPU_LIMIT:-2}
+      - "8085:8085"
+    mem_limit: ${MODELING_CLIENT_MEMORY_LIMIT:-6G}
+    cpus: ${MODELING_CLIENT_CPU_LIMIT:-2}
 
 volumes:
   mmar-initiator:
   mmar-server-data:
-  mmar-modeling-data:
-  mmar-metamodeling-data:
   mmar-shared-data:
-  mmar-vizrep-data:
+  mmar-sync-server-data:
+  mmar-metamodeling-data:
+  mmar-modeling-data:
